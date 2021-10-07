@@ -5,6 +5,8 @@ import Profile from "@/components/Profile.vue"
 import Signup from "@/components/Signup.vue"
 import Soda from "@/components/Soda.vue"
 import Addsoda from "@/components/Addsoda.vue"
+import Updatesoda from "@/components/Updatesoda.vue"
+import ChatRoom from '@/components/Chatroom.vue'
 
 const routes = [
     {
@@ -36,6 +38,16 @@ const routes = [
         path: "/addsoda/",
         name: "Addsoda",
         component: Addsoda
+    },
+    {
+        path: "/updatesoda/:id",
+        name: "Updatesoda",
+        component: Updatesoda
+    },
+    {
+      path: '/chatroom/:email',
+      name: 'ChatRoom',
+      component: ChatRoom
     }
 ];
 

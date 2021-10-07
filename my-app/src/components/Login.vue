@@ -1,10 +1,18 @@
 <template>
-<Navbar/>>
+<Navbar/>
     <div class="flex items-center justify-center form-login">
         <div class="w-full max-w-md">
           <form class="bg-white shadow-xl rounded px-12 pb-8 mb-4">
             <div class="text-gray-800 text-2xl flex justify-center border-b-2 py-2 mb-4">
                 Page de connexion
+            </div>
+            <div class="pb-4">
+                <p v-if="errors.length">
+                    <b class="text-red-400" >Merci de corriger l'/les erreur(s) suivantes:</b>
+                    <ul>
+                        <li v-for="error in errors" v-bind:key="error">- {{ error }}</li>
+                    </ul>
+                </p>
             </div>
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-normal mb-2" for="email">Email</label>
@@ -49,24 +57,31 @@ export default {
     },
     data() {
         return {
-            message: '',
+            errors: [],
             email: '',
             password: ''
         };
     },
     methods: {
         handleLogin() {
-            const user = {email: this.email, password: this.password}
-            console.log("Je suis là 1", user)
-            axios
+            if (this.email && this.password) {
+                const user = {email: this.email, password: this.password}
+                axios
                 .post("http://localhost:8081/user/login", user)
                 .then(response => {
-                    console.log("Je suis là 2", response.data)
                     localStorage.setItem('userData', JSON.stringify(response.data));
                     this.$router.push("/");
-                    console.log(localStorage);
                 })
                 .catch(err => console.log(err))
+            }
+            this.errors = [];
+
+            if (!this.email) {
+                this.errors.push('Email Obligatoire');
+            }
+            if (!this.password) {
+                this.errors.push('Mot de passe obligatoire');
+            }
         },
     }
 };

@@ -3,10 +3,22 @@
 </template>
 
 <script>
+// import io from 'socket.io-client'
+import * as io from 'socket.io-client'
 
 export default {
   name: 'App',
+  data () {
+    return {
+      socket: io('http://localhost:3000')
+    }
+  },
   components: {
+  },
+  methods: {
+    sendMessage(e) {
+      e.preventDefault()
+    }
   }
 }
 </script>

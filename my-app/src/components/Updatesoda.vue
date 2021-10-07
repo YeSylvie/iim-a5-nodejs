@@ -4,7 +4,7 @@
         <div class="w-full max-w-md">
           <form class="bg-white shadow-xl rounded px-12 pb-8 mb-4">
             <div class="text-gray-800 text-2xl flex justify-center border-b-2 py-2 mb-4">
-                Ajoute ton soda !
+                Modifie ton soda à ta sauce!
             </div>
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-normal mb-2" for="email">Nom du soda</label>
@@ -30,7 +30,7 @@
                 </textarea>
             </div>
             <div class="flex items-center justify-end form-group">
-                <button class="px-4 py-2 rounded text-white inline-block shadow-lg border-2 border-yellow-600 text-yellow-600 transition duration-300 ease-in-out hover:bg-yellow-600 hover:text-white" @click.prevent="addSoda()">Ajouter</button>
+                <button class="px-4 py-2 rounded text-white inline-block shadow-lg border-2 border-purple-400 text-purple-400 transition duration-300 ease-in-out hover:bg-purple-400 hover:text-white" @click.prevent="updateSoda()">Modifier</button>
             </div>
           </form>
         </div>
@@ -40,7 +40,7 @@
 <script>
 import axios from "axios"
 import Navbar from './Navbar.vue'
-const API_URL = "http://localhost:8081/sodas";
+const API_URL = "http://localhost:8081/sodas/";
 
 export default {
   name: 'Home',
@@ -52,14 +52,25 @@ export default {
     name: '',
     description: ''
   }),
+
+  mounted() {
+    const sodaId = this.$route.params.id
+    axios.get(API_URL+sodaId)
+        .then(response => {
+                this.name = response.data.name
+                this.description = response.data.description
+            })
+        .catch(error => console.log(error))
+  },
   methods: {
-        addSoda() {
+        updateSoda() {
+            const sodaId = this.$route.params.id
             const soda = {name: this.name, description: this.description}
             const config = {
                 headers: { Authorization : `Bearer `+ JSON.parse(localStorage.userData).token}
             }
             axios
-                .post(API_URL, soda, config)
+                .put(API_URL+sodaId, soda, config)
                 .then(response => {
                     console.log(response)
                     this.$router.push("/");

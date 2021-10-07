@@ -19,8 +19,8 @@
             <td class="py-4 px-6 border-b border-grey-light">{{ soda.name }}</td>
             <td class="py-4 px-6 border-b border-grey-light">
               <router-link :to="`/soda/${soda._id}`" class="border-2 border-blue-400 text-blue-400 font-bold py-1 px-3 rounded text-xs transition duration-300 ease-in-out hover:bg-blue-400 hover:text-white">Détail</router-link>
-              <a href="#" v-if="isToken === true" class="border-2 border-purple-400 text-purple-400 font-bold py-1 px-3 ml-1 rounded text-xs transition duration-300 ease-in-out hover:bg-purple-400 hover:text-white">Modifier</a>
-              <a href="#" v-if="isToken === true" class="border-2 border-pink-400 text-pink-400 font-bold py-1 px-3 ml-1 rounded text-xs transition duration-300 ease-in-out hover:bg-pink-400 hover:text-white">Supprimer</a>
+              <router-link :to="`/updatesoda/${soda._id}`" v-if="isToken === true" class="border-2 border-purple-400 text-purple-400 font-bold py-1 px-3 ml-1 rounded text-xs transition duration-300 ease-in-out hover:bg-purple-400 hover:text-white">Modifier</router-link>
+              <button v-if="isToken === true" @click.prevent="deleteSoda(soda._id)" class="border-2 border-pink-400 text-pink-400 font-bold py-1 px-3 ml-1 rounded text-xs transition duration-300 ease-in-out hover:bg-pink-400 hover:text-white">Supprimer</button>
             </td>
           </tr>
         </tbody>
@@ -32,7 +32,7 @@
 <script>
 import axios from "axios"
 import Navbar from './Navbar.vue'
-const API_URL = "http://localhost:8081/sodas";
+const API_URL = "http://localhost:8081/sodas/";
 
 export default {
   name: 'Home',
@@ -48,7 +48,6 @@ export default {
   mounted() {
     axios.get(API_URL)
       .then(response => {
-        console.log(response)
         this.sodas = response.data
         })
       .catch(error => console.log(error))
@@ -57,7 +56,22 @@ export default {
       this.isToken = true;
     }
   },
-  methods: {}
+  methods: {
+    deleteSoda(sodaId) {
+      const config = {
+          headers: { Authorization : `Bearer `+ JSON.parse(localStorage.userData).token}
+      }
+      if(confirm("Do you really want to delete?")){
+        axios.delete(API_URL+sodaId, config)
+        .then(response => {
+          console.log(response)
+          window.location.reload()
+        })
+        .catch(error => console.log(error))
+        }
+      
+    }
+  }
 }
 </script>
 

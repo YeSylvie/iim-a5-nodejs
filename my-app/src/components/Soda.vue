@@ -70,7 +70,6 @@ export default {
     const sodaId = this.$route.params.id
     axios.get(API_URL+sodaId)
       .then(response => {
-        console.log(response)
         this.soda = response.data
         })
       .catch(error => console.log(error))
