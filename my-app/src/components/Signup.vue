@@ -1,0 +1,77 @@
+<template>
+    <Navbar/>>
+    <div class="flex items-center justify-center form-login">
+        <div class="w-full max-w-md">
+          <form class="bg-white shadow-xl rounded px-12 pb-8 mb-4">
+            <div class="text-gray-800 text-2xl flex justify-center border-b-2 py-2 mb-4">
+                Page de d'inscription
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-normal mb-2" for="email">Email</label>
+                <input
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline form-control"
+                    name="email"
+                    v-model="email"
+                    type="text"
+                    required
+                    autofocus
+                    placeholder="Email"
+                />
+            </div>
+            <div class="mb-4 form-group">
+                <label class="block text-gray-700 text-sm font-normal mb-2" for="password">Mot de passe</label>
+                <input
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline form-control"
+                    v-model="password"
+                    type="password"
+                    placeholder="Password"
+                    name="password"
+                    required
+                    autocomplete="current-password"
+                />
+            </div>
+            <div class="flex items-center justify-end form-group">
+                <button class="px-4 py-2 rounded text-white inline-block shadow-lg bg-blue-500 hover:bg-blue-600 focus:bg-blue-700" @click.prevent="handleSignup()">S'inscrire</button>
+            </div>
+          </form>
+        </div>
+      </div>
+</template>
+
+<script>
+import axios from 'axios';
+import Navbar from './Navbar.vue';
+
+export default {
+    name: "Login",
+    components: {
+        Navbar
+    },
+    data() {
+        return {
+            message: '',
+            email: '',
+            password: ''
+        };
+    },
+    methods: {
+        handleSignup() {
+            const user = {email: this.email, password: this.password}
+            console.log("Je suis là inscription 1", user)
+            axios
+                .post("http://localhost:8081/user/signup", user)
+                .then(response => {
+                    console.log("Je suis là inscription 2", response)
+                    this.$router.push("/login");
+                })
+        },
+    },
+};
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped>
+.form-login {
+    height: 90vh;
+}
+</style>
