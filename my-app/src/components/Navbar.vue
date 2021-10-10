@@ -53,7 +53,7 @@ export default {
     methods: {
       logout() {
         localStorage.removeItem('userData')
-        this.$router.push("/");
+        window.location = '/'
       }
     }
 }

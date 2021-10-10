@@ -16,12 +16,8 @@
           md:w-100
         "
       >
-        <img
-          class="h-1/2 w-full sm:h-full sm:w-1/2 object-cover"
-          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5gjONyDo0FJuOuR4QhMipwDzBZJMyuvuYrnx_4528_P9zDxrZNA_B_MOnEEKynnytX4w&usqp=CAU"
-          alt="image"
-        />
-
+        <div id="threejs" ref="threejs" class="sm:h-100 sm:w-1/2 object-cover">
+        </div>
         <div
           class="
             flex-1
@@ -54,6 +50,8 @@
 <script>
 import axios from "axios"
 import Navbar from './Navbar.vue'
+import * as THREE from 'three'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 const API_URL = "http://localhost:8081/sodas/";
 
 export default {
@@ -64,17 +62,103 @@ export default {
   data: () => ({
     error: "",
     soda: {},
+     publicPath: process.env.BASE_URL
   }),
 
   mounted() {
+    const canvas = this.initCanvas()
+    const scene = canvas.scene
+
+    this.initLightning(scene)
+    this.initObject(scene)
+    this.render(canvas)
+
     const sodaId = this.$route.params.id
     axios.get(API_URL+sodaId)
       .then(response => {
         this.soda = response.data
         })
       .catch(error => console.log(error))
+
+    window.addEventListener("resize", () => {
+      this.resizeCanvas(canvas.renderer)
+    });
   },
-  methods: {}
+  methods: {
+    initCanvas: function() {
+        const div = this.$refs.threejs
+        const width = div.offsetWidth
+        const height = div.offsetHeight
+
+        console.log(width, height)
+
+        const scene = new THREE.Scene()
+
+        const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 100)
+        camera.position.setZ(20)
+        camera.position.setY(7)
+        camera.position.setX(0)
+
+        const renderer = new THREE.WebGLRenderer()
+        renderer.setPixelRatio(window.devicePixelRatio)
+        renderer.setSize(width, height)
+
+        div.appendChild(renderer.domElement)
+
+
+
+        return {scene, camera, renderer}
+    },
+    initLightning: function(scene) {
+      const pointLight = new THREE.PointLight(0xffffff)
+      pointLight.position.set(20, 20, 20)
+
+      const ambientLight = new THREE.AmbientLight(0xf1f1f1)
+
+      scene.add(ambientLight)
+      scene.add(pointLight)
+    },
+    initObject: function(scene) {
+      const loader = new GLTFLoader()
+      loader.load(
+        `${this.publicPath}soda_can/scene.gltf`, 
+        function(gltf) {
+            const obj = gltf.scene
+
+            scene.add(obj)
+
+            obj.rotation.x += 0.7
+
+            const animateObj = function() {
+                requestAnimationFrame(animateObj)
+                obj.rotation.y += 0.025
+            }
+
+            animateObj()
+        }, 
+        undefined, 
+        function(error) {
+            console.error(error)
+        }
+      )
+    },
+    render: function(canvas) {
+      requestAnimationFrame(() => this.render(canvas))
+
+      const scene = canvas.scene
+      const camera = canvas.camera
+      const renderer = canvas.renderer
+
+      renderer.render(scene, camera)
+    },
+    resizeCanvas: function(renderer) {
+      const div = this.$refs.threejs
+      const width = div.offsetWidth
+      const height = div.offsetHeight
+
+      renderer.setSize(width, height)
+    }
+  }
 }
 </script>
 
@@ -82,5 +166,9 @@ export default {
 <style scoped>
 .soda-detail {
     height: 90vh;
+}
+
+#threejs {
+  height: 40vh;
 }
 </style>
